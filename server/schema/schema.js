@@ -1,4 +1,7 @@
 const { projects, clients } = require("../sampleData");
+// Mongoose models
+const Project = require('../models/Project')
+const Client = require('../models/Client')
 
 const {
   GraphQLObjectType,
@@ -33,7 +36,8 @@ const ProjectType = new GraphQLObjectType({
     client: {
         type: ClientType,
         resolve(parent, args){
-            return clients.find(client => client.id === parent.clientId)
+            // return clients.find(client => client.id === parent.clientId) //Testing with sampleData.js
+            return Client.findById(parent.clientId)
         }
     }
   }),
@@ -48,7 +52,8 @@ const RootQuery = new GraphQLObjectType({
     clients: {
       type: new GraphQLList(ClientType),
       resolve(parent, args) {
-        return clients;
+        // return clients; //Testing with sampleData.js
+        return Client.find(); //Via MongoDB
       },
     },
     //Getting Single Client
@@ -56,16 +61,18 @@ const RootQuery = new GraphQLObjectType({
       type: ClientType,
       args: { id: { type: GraphQLID } }, //For passing in arguments in GraphQL
       resolve(parent, args) {
-        return clients.find((client) => client.id === args.id);
+        // return clients.find((client) => client.id === args.id); //Testing with sampleData.js
+        return Client.findById(args.id)
       },
     },
 
     // ======= Projects ========
-    //Getting All Clients
+    //Getting All Projects
     projects: {
       type: new GraphQLList(ProjectType),
       resolve(parent, args) {
-        return projects;
+        //return projects; //Testing with sampleData.js
+        return Project.find()
       },
     },
     //Getting Single Client
@@ -73,7 +80,8 @@ const RootQuery = new GraphQLObjectType({
       type: ProjectType,
       args: { id: { type: GraphQLID } }, //For passing in arguments in GraphQL
       resolve(parent, args) {
-        return projects.find((project) => project.id === args.id);
+        // return projects.find((project) => project.id === args.id); //Testing with sampleData.js
+        return Project.findById(args.id)
       },
     },
   },
